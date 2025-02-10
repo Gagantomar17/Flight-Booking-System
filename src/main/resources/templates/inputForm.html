@@ -11,17 +11,17 @@
         
         <!-- Source Input Field -->
         <label for="source">Source:</label>
-        <input type="text" id="source" th:field="*{source}" placeholder="Enter source (e.g., DEL)" required />
+        <input type="text" id="source" name="source" th:field="*{source}" placeholder="Enter source (e.g., DEL)" required />
         <br><br>
 
         <!-- Destination Input Field -->
         <label for="destination">Destination:</label>
-        <input type="text" id="destination" th:field="*{destination}" placeholder="Enter destination (e.g., NYC)" required />
+        <input type="text" id="destination" name="destination" th:field="*{destination}" placeholder="Enter destination (e.g., NYC)" required />
         <br><br>
 
         <!-- Date Input Field -->
         <label for="date">Date:</label>
-        <input type="date" id="date" th:field="*{date}" required />
+        <input type="date" id="date" name="date" th:field="*{date}" required />
         <br><br>
 
         <!-- Submit Button -->

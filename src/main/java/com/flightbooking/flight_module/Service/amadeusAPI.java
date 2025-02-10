@@ -7,14 +7,14 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONObject; 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flightbooking.flight_module.Model.flightWrapper;
 import com.flightbooking.flight_module.Model.flight_detail;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,8 @@ import java.util.List;
 public class amadeusAPI {
 
     private static String responseBody = "null" ;
+    private static String repriceResponse = "null";
+    private static String accessToken = "null";
 
     @Value("${amadeus.oath.url}")
     private String oath_url ;
@@ -32,6 +34,63 @@ public class amadeusAPI {
 
     @Value("${amadeus.client.secret}")
     private String client_secret ;
+
+    @Value("${amadeus.reprice.url}")
+    private String reprice_url ;
+
+    public String repriceFlights(String response){
+        System.out.println("Response pass : " + response);
+        JSONObject jsonObject = new JSONObject();
+        JSONObject responseObj = new JSONObject(response);
+        JSONArray responseArray = new JSONArray();
+        responseArray.put(responseObj);
+        jsonObject.put("flightOffers", responseArray);
+        jsonObject.put("type", "flight-offers-pricing");
+        
+        JSONObject responseBody = new JSONObject();
+        responseBody.put("data", jsonObject);
+        System.out.println("Request Body : " + responseBody.toString());
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()){
+            HttpPost post = new HttpPost(reprice_url);
+            post.addHeader("Authorization", "Bearer " + accessToken);
+            post.addHeader("Content-Type", "application/json");
+            post.setEntity(new StringEntity(responseBody.toString()));
+
+            try(CloseableHttpResponse httpResponse = httpClient.execute(post)) {
+                repriceResponse = EntityUtils.toString(httpResponse.getEntity()); 
+                System.out.println("Reprice Reprice Response : " + repriceResponse);
+            } catch (Exception e) {
+                e.printStackTrace();
+                repriceResponse = "Error : " + e.getMessage();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            repriceResponse = "Error Error : " + e.getMessage() ;
+        }
+
+        return repriceResponse ;
+    }
+
+    public boolean isPriceUnchanged(String repriceResponse , String price){
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            JsonNode rootNode = objectMapper.readTree(repriceResponse);
+            String reprice = rootNode.path("data").path("flightOffers").get(0).path("price").path("total").asText()  ;
+            System.out.println("Fetched reprice value : " + reprice);
+            price = price.replaceAll("[^0-9.]", "");
+            System.out.println("Fetched price value : " + price);
+            float beforePrice = Float.parseFloat(price);
+            float afterPrice = Float.parseFloat(reprice);
+            if(beforePrice == afterPrice){
+                return true ;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false ;
+    }
 
     public String getFlights(String source, String destination, String date){
         
@@ -45,11 +104,12 @@ public class amadeusAPI {
             try (CloseableHttpResponse tokenResponse = httpClient.execute(post)) {
                 String tokenJsonResponse = EntityUtils.toString(tokenResponse.getEntity());
                 JSONObject tokenJsonObject = new JSONObject(tokenJsonResponse);
-                String accessToken = tokenJsonObject.getString("access_token");
+                accessToken = tokenJsonObject.getString("access_token");
 
                 // Use the access token to fetch flight offers
                 HttpGet flightRequest = new HttpGet("https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode="+source+"&destinationLocationCode="+destination+"&departureDate="+date+"&adults=1&nonStop=false&max=250");
                 flightRequest.addHeader("Authorization", "Bearer " + accessToken);
+                flightRequest.addHeader("Accept", "application/vnd.amadeus+json"); 
 
                 try (CloseableHttpResponse flightResponse = httpClient.execute(flightRequest)) {
                     responseBody = EntityUtils.toString(flightResponse.getEntity());
@@ -66,9 +126,10 @@ public class amadeusAPI {
         return responseBody;
     };
 
-    public List<flight_detail> responseParsing(String responseBody){
+    public List<flightWrapper> responseParsing(String responseBody){
         ObjectMapper objectMapper = new ObjectMapper();
-        List<flight_detail> flights = new ArrayList<>();
+        List<flightWrapper> flights = new ArrayList<>();
+        //List<flight_detail> flights = new ArrayList<>();
         try{
             JsonNode rootNode = objectMapper.readTree(responseBody); // complete api response
             JsonNode dataArray = rootNode.get("data"); // it contains the flights data 
@@ -76,7 +137,9 @@ public class amadeusAPI {
             if(dataArray !=null && dataArray.isArray() ){
                 for(JsonNode flightNode : dataArray){
 
+                    JSONObject flightObject = new JSONObject(flightNode.toString());
                     flight_detail flightModel = new flight_detail();
+
                     JsonNode itinerariesNode = flightNode.path("itineraries");
                     JsonNode travelerPricingsNode = flightNode.path("travelerPricings");
                     boolean oneWay = flightNode.path("oneWay").asBoolean();
@@ -143,7 +206,7 @@ public class amadeusAPI {
                         
                     }
 
-                    flights.add(flightModel); 
+                    flights.add(new flightWrapper(flightModel, flightObject.toString())); 
                     
                 }
                 
@@ -153,5 +216,7 @@ public class amadeusAPI {
         }
         return flights ;
     }
+
+    
 
 }
