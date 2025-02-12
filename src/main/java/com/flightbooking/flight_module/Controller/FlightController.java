@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.flightbooking.flight_module.Model.agentDetails;
 import com.flightbooking.flight_module.Model.flightSearch;
 import com.flightbooking.flight_module.Model.flightWrapper;
+import com.flightbooking.flight_module.Model.travellerDetail;
 import com.flightbooking.flight_module.Service.amadeusAPI;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +81,7 @@ public class FlightController {
                 repriceResponse = " Error occured " + e.getMessage();
             }
             model.addAttribute("repriceResponse", repriceResponse);
+            model.addAttribute("travellerDetail", new travellerDetail());
             boolean reprice = api.isPriceUnchanged(repriceResponse, price) ;
 
             if(!reprice){
@@ -85,6 +89,31 @@ public class FlightController {
             }else{
                 return "bookFlights" ;
             } 
+    }
+
+    @PostMapping("/submitform")
+    public String createOrder(Model model ,
+    @ModelAttribute travellerDetail traveller ,
+    @ModelAttribute agentDetails agent ,
+    @RequestParam("repriceResponse") String repriceResponse){
+        String reqBody = "null" ;
+        String resBody = "null" ;
+        try {
+            reqBody = api.orderReqBody(repriceResponse , traveller , agent) ;
+            System.out.println("create order request : " + reqBody);
+            try {
+                resBody = api.bookFlight(reqBody) ;
+                
+            } catch (Exception e) {
+                reqBody = e.getMessage() ;
+            }
+        } catch (Exception e) {
+            resBody = e.getMessage();
+        }
+
+        System.out.println("create order response body : " + resBody);
+        model.addAttribute("responseBody", resBody);
+        return "orderPage" ;
     }
 
 }

@@ -13,9 +13,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flightbooking.flight_module.Model.agentDetails;
 import com.flightbooking.flight_module.Model.flightWrapper;
 import com.flightbooking.flight_module.Model.flight_detail;
+import com.flightbooking.flight_module.Model.travellerDetail;
+
 import java.io.IOException;
+import java.net.http.HttpClient;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +41,9 @@ public class amadeusAPI {
 
     @Value("${amadeus.reprice.url}")
     private String reprice_url ;
+
+    @Value("${amadeus.booking.url}")
+    private String booking_url ;
 
     public String repriceFlights(String response){
         System.out.println("Response pass : " + response);
@@ -215,6 +222,135 @@ public class amadeusAPI {
             e.printStackTrace();
         }
         return flights ;
+    }
+
+    public String orderReqBody(String repriceResponse , travellerDetail traveller , agentDetails agent){
+        JSONObject requestBody = new JSONObject();
+
+        JSONObject jsonObject = new JSONObject(repriceResponse);
+        JSONArray flightOfferArray = jsonObject.getJSONObject("data").getJSONArray("flightOffers") ;
+
+        JSONObject data = new JSONObject();
+        data.put("type", "flight-order");
+        data.put("flightOffers", flightOfferArray);
+
+        JSONObject travellerObj = new JSONObject();
+        travellerObj.put("id", traveller.getId());
+        travellerObj.put("dateOfBirth", traveller.getDateOfBirth());
+
+        JSONObject name = new JSONObject();
+        name.put("firstName", traveller.getFirstName());
+        name.put("lastName", traveller.getLastName());
+        travellerObj.put("name", name);
+
+        travellerObj.put("gender", traveller.getGender());
+
+        JSONObject phone = new JSONObject();
+        phone.put("deviceType", traveller.getDeviceType());
+        phone.put("countryCallingCode", traveller.getCountryCallingCode());
+        phone.put("number", traveller.getNumber());
+
+        JSONArray phoneArray = new JSONArray();
+        phoneArray.put(phone);
+
+        JSONObject contact = new JSONObject();
+        contact.put("emailAddress", traveller.getEmailAddress());
+        contact.put("phones", phoneArray);
+
+        travellerObj.put("contact", contact);
+
+        JSONObject document = new JSONObject();
+        document.put("documentType", traveller.getDocumentType());
+        document.put("birthPlace", traveller.getBirthPlace());
+        document.put("issuanceLocation", traveller.getIssuanceLocation());
+        document.put("issuanceDate", traveller.getIssuanceDate());
+        document.put("number", traveller.getPassportNumber());
+        document.put("expiryDate", traveller.getExpiryDate());
+        document.put("issuanceCountry", traveller.getIssuanceCountry());
+        document.put("validityCountry", traveller.getValidityCountry());
+        document.put("nationality", traveller.getNationality());
+        document.put("holder", traveller.getHolder());
+
+        JSONArray documentArray = new JSONArray();
+        documentArray.put(document);
+
+        travellerObj.put("documents", documentArray);
+
+        JSONArray travellerArray = new JSONArray();
+        travellerArray.put(travellerObj);
+        data.put("travelers", travellerArray);
+
+        JSONObject remarks = new JSONObject();
+        JSONObject general = new JSONObject();
+        general.put("subType", "GENERAL_MISCELLANEOUS");
+        general.put("text", "ONLINE BOOKING FROM Tomar Travel Pvt Ltd");
+        JSONArray generalArray = new JSONArray();
+        generalArray.put(general);
+        remarks.put("general", generalArray);
+
+        data.put("remarks", remarks);
+
+        JSONObject ticketingAgreement = new JSONObject();
+        ticketingAgreement.put("option", "DELAY_TO_CANCEL");
+        ticketingAgreement.put("delay", "6D");
+
+        data.put("ticketingAgreement", ticketingAgreement);
+
+        JSONObject contacts = new JSONObject();
+        JSONObject addresseeName = new JSONObject();
+        addresseeName.put("firstName", agent.getFirstName());
+        addresseeName.put("lastName", agent.getLastName());
+        contacts.put("addresseeName", name);
+        contacts.put("companyName", agent.getCompanyName());
+        contacts.put("purpose", agent.getPurpose());
+        JSONObject agentPhone = new JSONObject();
+        agentPhone.put("deviceType", agent.getDeviceType());
+        agentPhone.put("countryCallingCode", agent.getCountryCallingCode());
+        agentPhone.put("number", agent.getNumber());
+
+        JSONArray agentPhoneArray = new JSONArray();
+        agentPhoneArray.put(agentPhone);
+        contacts.put("phones", agentPhoneArray);
+        contacts.put("emailAddress", agent.getEmailAddress());
+
+        JSONObject address = new JSONObject();
+        JSONArray lines = new JSONArray();
+        lines.put(agent.getLines());
+        address.put("lines", lines);
+        address.put("postalCode", agent.getPostalCode());
+        address.put("cityName", agent.getCityName());
+        address.put("countryCode", agent.getCountryCode());
+
+        contacts.put("address", address);
+
+        JSONArray contactsArray = new JSONArray();
+        contactsArray.put(contacts);
+        data.put("contacts", contactsArray);
+
+        requestBody.put("data", data);
+    
+        return requestBody.toString() ;
+    }
+
+    public String bookFlight(String reqBody){
+        String bookingResponse = "null" ;
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpPost post = new HttpPost(booking_url);
+            post.addHeader("Authorization", "Bearer " + accessToken);
+            post.addHeader("Content-Type", "application/json");
+            post.setEntity(new StringEntity(reqBody));
+
+            try (CloseableHttpResponse httpResponse = httpClient.execute(post) ) {
+                bookingResponse = EntityUtils.toString(httpResponse.getEntity()) ;
+            } catch (Exception e) {
+                e.printStackTrace();
+                bookingResponse = "Booking error : " + e.getMessage() ;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            bookingResponse = "booking order error : " + e.getLocalizedMessage();
+        }
+        return bookingResponse ;
     }
 
     
