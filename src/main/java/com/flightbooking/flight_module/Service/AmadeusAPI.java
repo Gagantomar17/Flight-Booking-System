@@ -1,5 +1,6 @@
 package com.flightbooking.flight_module.Service;
 
+import com.flightbooking.flight_module.Model.*;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -13,18 +14,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flightbooking.flight_module.Model.agentDetails;
-import com.flightbooking.flight_module.Model.flightWrapper;
-import com.flightbooking.flight_module.Model.flight_detail;
-import com.flightbooking.flight_module.Model.travellerDetail;
 
 import java.io.IOException;
-import java.net.http.HttpClient;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class amadeusAPI {
+public class AmadeusAPI {
 
     private static String responseBody = "null" ;
     private static String repriceResponse = "null";
@@ -111,7 +107,12 @@ public class amadeusAPI {
             try (CloseableHttpResponse tokenResponse = httpClient.execute(post)) {
                 String tokenJsonResponse = EntityUtils.toString(tokenResponse.getEntity());
                 JSONObject tokenJsonObject = new JSONObject(tokenJsonResponse);
+                if (!tokenJsonObject.has("access_token")) {
+                    throw new RuntimeException("Access token not found in response: " + tokenJsonResponse);
+                }
                 accessToken = tokenJsonObject.getString("access_token");
+
+                System.out.println("Here is access token " + accessToken) ;
 
                 // Use the access token to fetch flight offers
                 HttpGet flightRequest = new HttpGet("https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode="+source+"&destinationLocationCode="+destination+"&departureDate="+date+"&adults=1&nonStop=false&max=250");
@@ -353,6 +354,92 @@ public class amadeusAPI {
         return bookingResponse ;
     }
 
-    
+    public bookingDetails orderResponseParsing(String bookingResponse){
+        bookingDetails bookingData = new bookingDetails();
+        ObjectMapper mapper = new ObjectMapper();
 
+        try {
+            JsonNode rootNode = mapper.readTree(bookingResponse);
+            JsonNode dataNode = rootNode.get("data");
+
+            bookingData.setOrderId(dataNode.get("id").asText());
+            bookingData.setQueuingOfficeId(dataNode.get("queuingOfficeId").asText());
+
+            JsonNode recordsArray = dataNode.get("associatedRecords");
+            if(recordsArray != null && recordsArray.isArray()){
+                for(JsonNode record : recordsArray){
+                    bookingData.setCreationDate(record.get("creationDate").asText());
+                }
+            }
+
+            JsonNode flightOfferArray = dataNode.get("flightOffers");
+
+            if(flightOfferArray != null && flightOfferArray.isArray()){
+                for(JsonNode flightOffer : flightOfferArray){
+                    JsonNode itinerariesArray = flightOffer.get("itineraries");
+
+                    if(itinerariesArray != null && itinerariesArray.isArray()){
+                        for(JsonNode itinerary : itinerariesArray){
+                            JsonNode segmentsArray = itinerary.get("segments");
+
+                            if(segmentsArray != null && segmentsArray.isArray()){
+                                for(JsonNode segment : segmentsArray){
+                                    bookingData.setDeparture(segment.get("departure").get("iataCode").asText());
+                                    bookingData.setDepartureTime(segment.get("departure").get("at").asText());
+                                    bookingData.setArrival(segment.get("arrival").get("iataCode").asText());
+                                    bookingData.setArrivalTime(segment.get("arrival").get("at").asText());
+                                    bookingData.setFlightNumber(segment.get("number").asText());
+                                    bookingData.setCarrierCode(segment.get("carrierCode").asText());
+                                }
+                            }
+                        }
+                    }
+
+                    JsonNode priceNode = flightOffer.get("price");
+                    bookingData.setTotalPrice(priceNode.get("total").asText());
+                    bookingData.setBillingCurrency(priceNode.get("currency").asText());
+
+                    JsonNode travelerPricingsArray = flightOffer.get("travelerPricings");
+                    if(travelerPricingsArray != null && travelerPricingsArray.isArray()){
+                        for (JsonNode travelerPricing : travelerPricingsArray){
+                            JsonNode fareDetailsBySegmentArray = travelerPricing.get("fareDetailsBySegment");
+
+                            if(fareDetailsBySegmentArray != null && fareDetailsBySegmentArray.isArray()){
+                                for (JsonNode fareDetail : fareDetailsBySegmentArray){
+                                    bookingData.setBaggage(fareDetail.get("includedCheckedBags").get("weight").asText());
+                                    bookingData.setBaggageUnit(fareDetail.get("includedCheckedBags").get("weightUnit").asText());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            JsonNode travelersArray = dataNode.get("travelers");
+            if(travelersArray != null && travelersArray.isArray()){
+                for(JsonNode traveler : travelersArray){
+                    bookingData.setTravelerId(traveler.get("id").asText());
+                    bookingData.setGender(traveler.get("gender").asText());
+                    bookingData.setDateOfBirth(traveler.get("dateOfBirth").asText());
+                    bookingData.setFirstName(traveler.get("name").get("firstName").asText());
+                    bookingData.setLastName(traveler.get("name").get("lastName").asText());
+
+                }
+            }
+
+            JsonNode remarksArray = dataNode.get("remarks").get("general");
+            if(remarksArray != null && remarksArray.isArray()){
+                for(JsonNode general : remarksArray){
+                    bookingData.setRemarks(general.get("text").asText());
+                }
+            }
+
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+
+        return bookingData ;
+    }
 }

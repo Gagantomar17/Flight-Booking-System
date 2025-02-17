@@ -9,6 +9,51 @@
     <h2>Booking order status</h2><br><br>
 
     <p th:text="${responseBody}" ></p>
+
+    <h1>Booking Details</h1>
+
+    <section>
+        <h2>Order Information</h2>
+        <p><strong>Order ID:</strong> <span th:text="${bookingData.orderId}">Order ID</span></p>
+        <p><strong>Queuing Office ID:</strong> <span th:text="${bookingData.queuingOfficeId}">Queuing Office</span></p>
+        <p><strong>Creation Date:</strong> <span th:text="${bookingData.creationDate}">Creation Date</span></p>
+    </section>
+
+    <section>
+        <h2>Flight Information</h2>
+        <p><strong>Departure:</strong> <span th:text="${bookingData.departure}">Departure</span></p>
+        <p><strong>Departure Time:</strong> <span th:text="${bookingData.departureTime}">Departure Time</span></p>
+        <p><strong>Arrival:</strong> <span th:text="${bookingData.arrival}">Arrival</span></p>
+        <p><strong>Arrival Time:</strong> <span th:text="${bookingData.arrivalTime}">Arrival Time</span></p>
+        <p><strong>Carrier Code:</strong> <span th:text="${bookingData.carrierCode}">Carrier Code</span></p>
+        <p><strong>Flight Number:</strong> <span th:text="${bookingData.flightNumber}">Flight Number</span></p>
+        <p>
+            <strong>Baggage:</strong>
+            <span th:text="${bookingData.baggage}">Baggage</span>
+            <span th:text="${bookingData.baggageUnit}">Unit</span>
+        </p>
+    </section>
+
+    <section>
+        <h2>Pricing Information</h2>
+        <p><strong>Total Price:</strong> <span th:text="${bookingData.totalPrice}">Total Price</span></p>
+        <p><strong>Billing Currency:</strong> <span th:text="${bookingData.billingCurrency}">Billing Currency</span></p>
+    </section>
+
+    <section>
+        <h2>Traveler Information</h2>
+        <p><strong>Traveler ID:</strong> <span th:text="${bookingData.travelerId}">Traveler ID</span></p>
+        <p><strong>First Name:</strong> <span th:text="${bookingData.firstName}">First Name</span></p>
+        <p><strong>Last Name:</strong> <span th:text="${bookingData.lastName}">Last Name</span></p>
+        <p><strong>Gender:</strong> <span th:text="${bookingData.gender}">Gender</span></p>
+        <p><strong>Date of Birth:</strong> <span th:text="${bookingData.dateOfBirth}">DOB</span></p>
+    </section>
+
+    <section>
+        <h2>Additional Information</h2>
+        <p><strong>Remarks:</strong> <span th:text="${bookingData.remarks}">Remarks</span></p>
+    </section>
+
     
 </body>
 </html>

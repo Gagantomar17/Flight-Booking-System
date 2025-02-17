@@ -1,5 +1,6 @@
 package com.flightbooking.flight_module.Controller;
 
+import com.flightbooking.flight_module.Model.*;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,21 +10,18 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.flightbooking.flight_module.Model.agentDetails;
-import com.flightbooking.flight_module.Model.flightSearch;
-import com.flightbooking.flight_module.Model.flightWrapper;
-import com.flightbooking.flight_module.Model.travellerDetail;
-import com.flightbooking.flight_module.Service.amadeusAPI;
+import com.flightbooking.flight_module.Service.AmadeusAPI;
 import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 public class FlightController {
 
-    private final amadeusAPI api ;
+    private final AmadeusAPI api ;
 
     @Autowired
-    public FlightController(amadeusAPI api){
+    public FlightController(AmadeusAPI api){
+
         this.api = api ;
     }
 
@@ -35,16 +33,6 @@ public class FlightController {
 
     @PostMapping("/searchFlights")
     public String searchResult(Model model ,
-
-    // below @RequestParam() annotation is used to fetch data from html/thymeleaf code 
-    // by matching approrpiate (name="") tag value assigned 
-
-        //  @RequestParam("source") String source ,
-        //  @RequestParam("destination") String destination ,
-        //  @RequestParam("date") String date 
-
-    // below model attribute ammotaion bind the model and then we can use getter and setter to 
-    // fetch desired data from the model created 
     
         @ModelAttribute flightSearch fSearch){
             String apiResponse ;
@@ -98,21 +86,32 @@ public class FlightController {
     @RequestParam("repriceResponse") String repriceResponse){
         String reqBody = "null" ;
         String resBody = "null" ;
+        bookingDetails bookingData = null;
         try {
             reqBody = api.orderReqBody(repriceResponse , traveller , agent) ;
             System.out.println("create order request : " + reqBody);
             try {
                 resBody = api.bookFlight(reqBody) ;
+                System.out.println("create order response body : " + resBody);
+                bookingData = api.orderResponseParsing(resBody) ;
                 
             } catch (Exception e) {
-                reqBody = e.getMessage() ;
+                resBody = e.getMessage() ;
+                System.out.println("create order response body : " + resBody);
             }
         } catch (Exception e) {
             resBody = e.getMessage();
+            System.out.println("create order response body : " + resBody);
         }
+        if(!new JSONObject(resBody).has("data")){
+            System.out.println("create order response body : " + resBody);
+            model.addAttribute("responseBody", resBody);
+            return "errorPage" ;
+        }
+        //System.out.println("create order response body : " + resBody);
 
-        System.out.println("create order response body : " + resBody);
         model.addAttribute("responseBody", resBody);
+        model.addAttribute("bookingData" , bookingData);
         return "orderPage" ;
     }
 
