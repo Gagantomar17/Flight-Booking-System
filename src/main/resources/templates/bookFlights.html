@@ -4,62 +4,114 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh; 
+            padding-top: 30px;
+            margin: 0;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            width: 500px;
+            text-align: center;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <h1>Reprice Response </h1><br>
-    <p>reprice successfull</p>
-    <p th:text="${repriceResponse}" ></p>
+    <div class="form-container">
+        <h1>Traveller Details</h1><br>
+        <p>reprice successfull</p>
 
-    <form th:action="@{/submitform}" th:object="${travellerDetail}" method="post">
+        <form th:action="@{/submitform}" th:object="${travellerDetail}" method="post">
 
-        <label for="dateOfBirth">Date of Birth:</label>
-        <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" required/><br/>
+            <label for="dateOfBirth">Date of Birth:</label>
+            <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" required/><br/>
 
-        <label for="gender">Gender:</label>
-        <input type="text" id="gender" th:field="*{gender}" required/><br/>
+            <label for="gender">Gender:</label>
+            <input type="text" id="gender" th:field="*{gender}" required/><br/>
 
-        <label for="firstName">First Name:</label>
-        <input type="text" id="firstName" th:field="*{firstName}" required/><br/>
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" th:field="*{firstName}" required/><br/>
 
-        <label for="lastName">Last Name:</label>
-        <input type="text" id="lastName" th:field="*{lastName}" required/><br/>
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" th:field="*{lastName}" required/><br/>
 
-        <label for="emailAddress">Email Address:</label>
-        <input type="email" id="emailAddress" th:field="*{emailAddress}" required/><br/>
+            <label for="emailAddress">Email Address:</label>
+            <input type="email" id="emailAddress" th:field="*{emailAddress}" required/><br/>
 
-        <label for="countryCallingCode">Country Calling Code:</label>
-        <input type="text" id="countryCallingCode" th:field="*{countryCallingCode}" required/><br/>
+            <label for="countryCallingCode">Country Calling Code:</label>
+            <input type="text" id="countryCallingCode" th:field="*{countryCallingCode}" required/><br/>
 
-        <label for="number">Number:</label>
-        <input type="text" id="number" th:field="*{number}" required/><br/>
+            <label for="number">Number:</label>
+            <input type="text" id="number" th:field="*{number}" required/><br/>
 
-        <label for="passportNumber">Passport Number</label>
-        <input type="text" id="passportNumber" th:field="*{passportNumber}" required/><br/>
+            <label for="passportNumber">Passport Number</label>
+            <input type="text" id="passportNumber" th:field="*{passportNumber}" required/><br/>
 
-        <label for="birthPlace">Birth Place:</label>
-        <input type="text" id="birthPlace" th:field="*{birthPlace}" required/><br/>
+            <label for="birthPlace">Birth Place:</label>
+            <input type="text" id="birthPlace" th:field="*{birthPlace}" required/><br/>
 
-        <label for="issuanceLocation">Issuance Location:</label>
-        <input type="text" id="issuanceLocation" th:field="*{issuanceLocation}" required/><br/>
+            <label for="issuanceLocation">Issuance Location:</label>
+            <input type="text" id="issuanceLocation" th:field="*{issuanceLocation}" required/><br/>
 
-        <label for="issuanceDate">Issuance Date:</label>
-        <input type="date" id="issuanceDate" th:field="*{issuanceDate}" required/><br/>
+            <label for="issuanceDate">Issuance Date:</label>
+            <input type="date" id="issuanceDate" th:field="*{issuanceDate}" required/><br/>
 
-        <label for="expiryDate">Expiry Date:</label>
-        <input type="date" id="expiryDate" th:field="*{expiryDate}" required/><br/>
+            <label for="expiryDate">Expiry Date:</label>
+            <input type="date" id="expiryDate" th:field="*{expiryDate}" required/><br/>
 
-        <label for="issuanceCountry">Issuance Country:</label>
-        <input type="text" id="issuanceCountry" th:field="*{issuanceCountry}" required/><br/>
+            <label for="issuanceCountry">Issuance Country:</label>
+            <input type="text" id="issuanceCountry" th:field="*{issuanceCountry}" required/><br/>
 
-        <label for="validityCountry">Validity Country:</label>
-        <input type="text" id="validityCountry" th:field="*{validityCountry}" required/><br/>
+            <label for="validityCountry">Validity Country:</label>
+            <input type="text" id="validityCountry" th:field="*{validityCountry}" required/><br/>
 
-        <label for="nationality">Nationality:</label>
-        <input type="text" id="nationality" th:field="*{nationality}" required/><br/>
-        
-        <input type="hidden" id="repriceResponse" th:value="${repriceResponse}" name="repriceResponse" >
-        <button type="submit">Submit</button>
-    </form>
+            <label for="nationality">Nationality:</label>
+            <input type="text" id="nationality" th:field="*{nationality}" required/><br/>
+            
+            <input type="hidden" id="repriceResponse" th:value="${repriceResponse}" name="repriceResponse" >
+            <button type="submit">Submit</button>
+        </form>
+    </div>
     
 </body>
 </html>

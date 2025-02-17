@@ -2,22 +2,106 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Flight Results</title>
+    <style>
+         .flight-container {
+            display: flex;
+            flex-direction: column; 
+            gap: 40px;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .flight-box {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            width: 80%; 
+            max-width: 800px; 
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: row; 
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .flight-box h3 {
+            margin: 0 0 10px 0;
+        }
+
+        .flight-box p {
+            margin: 5px 0;
+        }
+
+        .flight-box button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .flight-box button:hover {
+            background-color: #0056b3;
+        }
+
+        .search-details p {
+            display: inline-block;
+            margin: 0 15px; 
+            font-size: 18px; 
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .search-container {
+            text-align: center;
+        }
+
+    </style>
 </head>
 <body>
     
-    <h1>Flight Search Results</h1>
+    <div class="search-container">
+        <h1>Flight Search Results</h1>
+        <div class="search-details">
+            <p><strong>Source:</strong> <span th:text="${source}"></span></p>
+            <p><strong>Destination:</strong> <span th:text="${destination}"></span></p>
+            <p><strong>Date:</strong> <span th:text="${date}"></span></p>
+        </div>
+    </div>
+    <!-- <h1>Flight Search Results</h1>
     <p><strong>Source:</strong> <span th:text="${source}"></span></p>
     <p><strong>Destination:</strong> <span th:text="${destination}"></span></p>
     <p><strong>Date:</strong> <span th:text="${date}"></span></p>
+    <br>     -->
 
-    <h2>Response</h2>
-    <p th:text="${response}"></p>
-    <br>
-    <br>
+    <h1 style="text-align: center;">Available Flights</h1>
 
-     <h1>Available Flights</h1>
+     <div class="flight-container">
+        <!-- Loop through the flights list -->
+        <div th:each="flight : ${flights}" class="flight-box">
+            <h3 th:text="${flight.flightDetail.flightNo}"></h3>&nbsp;&nbsp;
+            <p><strong>Departure:</strong> <span th:text="${flight.flightDetail.depTime}"></span></p>
+            <p><strong>Arrival:</strong> <span th:text="${flight.flightDetail.arrTime}"></span></p>
+            <p><strong>Duration:</strong> <span th:text="${flight.flightDetail.duration}"></span></p>
+            <p><strong>Price:</strong> <span th:text="${flight.flightDetail.price}"></span></p>
+            <p><strong>Seats Available:</strong> <span th:text="${flight.flightDetail.avalSeats}"></span></p>
+            <p><strong>Class:</strong> <span th:text="${flight.flightDetail.classs}"></span></p>
+            <p><strong>Cabin:</strong> <span th:text="${flight.flightDetail.cabin}"></span></p>
+            <p><strong>Stops:</strong> <span th:text="${flight.flightDetail.stops}"></span></p>
+            <p><strong>Baggage:</strong> <span th:text="${flight.flightDetail.baggage}"></span></p>
 
-    <table >
+            <!-- Form to book flight -->
+            <form th:action="@{/bookflights}" method="post">
+                <input type="hidden" th:value="${flight.requestBody}" name="responseBody">
+                <input type="hidden" th:value="${flight.flightDetail.price}" name="beforePrice">
+                <button type="submit">Book Flight</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- <table >
         <thead>
             <tr>
                 <th>Flight Number</th>
@@ -35,7 +119,7 @@
             </tr>
         </thead>
         <tbody>
-            <!-- Loop through the flights list -->
+            Loop through the flights list
             <tr th:each="flight : ${flights}">
                 <td th:text="${flight.flightDetail.flightNo}"></td>
                 <td th:text="${flight.flightDetail.depTime}"></td>
@@ -57,7 +141,7 @@
                 
             </tr>
         </tbody>
-    </table>
+    </table> -->
 
 </body>
 </html>
