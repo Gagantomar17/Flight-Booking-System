@@ -109,9 +109,145 @@
             <input type="text" id="nationality" th:field="*{nationality}" required/><br/>
             
             <input type="hidden" id="repriceResponse" th:value="${repriceResponse}" name="repriceResponse" >
-            <button type="submit">Submit</button>
+            <button type="submit" onclick="validateForm()">Submit</button>
         </form>
     </div>
+
+    <script>
+        function validateForm() {
+            let nationality = document.getElementById("nationality").value.trim();
+            let validityCountry = document.getElementById("validityCountry").value.trim();
+            let issuanceCountry = document.getElementById("issuanceCountry").value.trim();
+            let passportNumber = document.getElementById("passportNumber").value.trim();
+            let issuanceDate = document.getElementById("issuanceDate").value;
+            let expiryDate = document.getElementById("expiryDate").value;
+            let birthPlace = document.getElementById("birthPlace").value.trim();
+            let issuanceLocation = document.getElementById("issuanceLocation").value.trim();
+            let number = document.getElementById("number").value.trim();
+            let countryCallingCode = document.getElementById("countryCallingCode").value.trim();
+            let emailAddress = document.getElementById("emailAddress").value.trim();
+            let firstName = document.getElementById("firstName").value.trim();
+            let lastName = document.getElementById("lastName").value.trim();
+            let gender = document.getElementById("gender").value.trim();
+            let dateOfBirth = document.getElementById("dateOfBirth").value;
+    
+            // Regular Expressions
+            let countryCodeRegex = /^[A-Z]{2}$/;  // Two uppercase letters for country codes
+            let passportRegex = /^[A-Z0-9]{6,9}$/;  // Passport format (alphanumeric, 6-9 characters)
+            let cityRegex = /^[A-Za-z\s]+$/;  // Only alphabets and spaces for city names
+            let phoneRegex = /^[0-9]{10}$/;  // 10-digit phone number
+            let callingCodeRegex = /^[0-9]{2}$/;  // Two-digit country calling code
+            let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;  // Email validation
+            let nameRegex = /^[A-Za-z\s]+$/;  // Alphabets only for names
+    
+            // Country Code Validations
+            if (!countryCodeRegex.test(nationality)) {
+                alert("Nationality must be a valid 2-letter country code (e.g., IN for India).");
+                event.preventDefault();
+                return false;
+            }
+    
+            if (!countryCodeRegex.test(validityCountry)) {
+                alert("Validity Country must be a valid 2-letter country code (e.g., US for United States).");
+                event.preventDefault();
+                return false;
+            }
+    
+            if (!countryCodeRegex.test(issuanceCountry)) {
+                alert("Issuance Country must be a valid 2-letter country code (e.g., FR for France).");
+                event.preventDefault();
+                return false;
+            }
+    
+            // Passport Number Validation
+            if (!passportRegex.test(passportNumber)) {
+                alert("Passport Number must be alphanumeric and between 6-9 characters.");
+                event.preventDefault();
+                return false;
+            }
+    
+            // Date Validation
+            let today = new Date();
+            today.setHours(0, 0, 0, 0); // Reset time for accurate comparison
+    
+            let issuanceDateObj = new Date(issuanceDate);
+            let expiryDateObj = new Date(expiryDate);
+            let dobObj = new Date(dateOfBirth);
+    
+            if (issuanceDateObj >= today) {
+                alert("Issuance Date must be in the past.");
+                event.preventDefault();
+                return false;
+            }
+    
+            if (expiryDateObj <= today) {
+                alert("Expiry Date must be in the future.");
+                event.preventDefault();
+                return false;
+            }
+    
+            if (dobObj >= today) {
+                alert("Date of Birth must be in the past.");
+                event.preventDefault();
+                return false;
+            }
+    
+            // City Name Validations
+            if (!cityRegex.test(birthPlace)) {
+                alert("Birth Place must contain only alphabetic characters.");
+                event.preventDefault();
+                return false;
+            }
+    
+            if (!cityRegex.test(issuanceLocation)) {
+                alert("Issuance Location must contain only alphabetic characters.");
+                event.preventDefault();
+                return false;
+            }
+    
+            // Phone Number Validation
+            if (!phoneRegex.test(number)) {
+                alert("Number must be a valid 10-digit phone number.");
+                event.preventDefault();
+                return false;
+            }
+    
+            // Country Calling Code Validation
+            if (!callingCodeRegex.test(countryCallingCode)) {
+                alert("Country Calling Code must be exactly 2 digits.");
+                event.preventDefault();
+                return false;
+            }
+    
+            // Email Validation
+            if (!emailRegex.test(emailAddress)) {
+                alert("Please enter a valid email address.");
+                event.preventDefault();
+                return false;
+            }
+    
+            // Name Validations
+            if (!nameRegex.test(firstName)) {
+                alert("First Name must contain only alphabets.");
+                event.preventDefault();
+                return false;
+            }
+    
+            if (!nameRegex.test(lastName)) {
+                alert("Last Name must contain only alphabets.");
+                event.preventDefault();
+                return false;
+            }
+    
+            if (!nameRegex.test(gender)) {
+                alert("Gender must contain only alphabets (e.g., Male, Female, Other).");
+                event.preventDefault();
+                return false;
+            }
+    
+            return true; 
+        }
+    </script>
     
 </body>
 </html>

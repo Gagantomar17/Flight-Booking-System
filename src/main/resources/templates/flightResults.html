@@ -70,11 +70,6 @@
             <p><strong>Date:</strong> <span th:text="${date}"></span></p>
         </div>
     </div>
-    <!-- <h1>Flight Search Results</h1>
-    <p><strong>Source:</strong> <span th:text="${source}"></span></p>
-    <p><strong>Destination:</strong> <span th:text="${destination}"></span></p>
-    <p><strong>Date:</strong> <span th:text="${date}"></span></p>
-    <br>     -->
 
     <h1 style="text-align: center;">Available Flights</h1>
 
@@ -100,48 +95,6 @@
             </form>
         </div>
     </div>
-
-    <!-- <table >
-        <thead>
-            <tr>
-                <th>Flight Number</th>
-                <th>Departure</th>
-                <th>Arrival</th>
-                <th>Duration</th>
-                <th>Price</th>
-                <th>Seats Available</th>
-                <th>Class</th>
-                <th>Cabin</th>
-                <th>Stops</th>
-                <th>Baggage</th>
-                <th>Proceed</th>
-                
-            </tr>
-        </thead>
-        <tbody>
-            Loop through the flights list
-            <tr th:each="flight : ${flights}">
-                <td th:text="${flight.flightDetail.flightNo}"></td>
-                <td th:text="${flight.flightDetail.depTime}"></td>
-                <td th:text="${flight.flightDetail.arrTime}"></td>
-                <td th:text="${flight.flightDetail.duration}"></td>
-                <td th:text="${flight.flightDetail.price}"></td>
-                <td th:text="${flight.flightDetail.avalSeats}"></td>
-                <td th:text="${flight.flightDetail.classs}"></td>
-                <td th:text="${flight.flightDetail.cabin}"></td>
-                <td th:text="${flight.flightDetail.stops}"></td>
-                <td th:text="${flight.flightDetail.baggage}"></td>
-                <td>
-                    <form th:action="@{/bookflights}" method="post">
-                        <input type="hidden" th:value="${flight.requestBody}" name="responseBody">
-                        <input type="hidden" th:value="${flight.flightDetail.price}" name="beforePrice">
-                        <button type="submit">Book Flight</button>
-                    </form>
-                </td>
-                
-            </tr>
-        </tbody>
-    </table> -->
 
 </body>
 </html>

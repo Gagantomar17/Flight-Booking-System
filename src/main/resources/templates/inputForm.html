@@ -72,8 +72,47 @@
             <br><br>
 
             <!-- Submit Button -->
-            <button type="submit">Search Flights</button>
+            <button type="submit" onclick="validateForm()">Search Flights</button>
         </form>
     </div>
+
+    <script>
+        function validateForm() {
+        // Get input values
+        let source = document.getElementById("source").value.trim();
+        let destination = document.getElementById("destination").value.trim();
+        let date = document.getElementById("date").value;
+
+        // Regular expression to check 3-letter uppercase airport codes
+        let airportCode = /^[A-Z]{3}$/;
+
+        // Check source and destination format
+        if (!airportCode.test(source)) {
+            alert("Source must be exactly 3 uppercase letters (e.g., DEL).");
+            event.preventDefault();
+            return false;
+        }
+
+        if (!airportCode.test(destination)) {
+            alert("Destination must be exactly 3 uppercase letters (e.g., NYC).");
+            event.preventDefault();
+            return false;
+        }
+
+        // Check if date is in the future
+        let today = new Date();
+        today.setHours(0, 0, 0, 0); // Remove time part to compare only dates
+        let selectedDate = new Date(date);
+
+        if (selectedDate <= today) {
+            alert("Please select a future date for travel.");
+            event.preventDefault();
+            return false;
+        }
+
+        return true ;
+    }
+
+    </script>
 </body>
 </html>

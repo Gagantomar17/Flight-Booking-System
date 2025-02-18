@@ -98,20 +98,16 @@ public class travellerDetail {
         return holder ;
     }
 
-    // public void setId(String id) {
-    //     this.id = id;
-    // }
-
     public void setDateOfBirth(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 
     public void setGender(String gender) {
-        this.gender = gender;
+        this.gender = gender.toUpperCase();
     }
 
     public void setFirstName(String firstName) {
-        this.firstName = firstName;
+        this.firstName = firstName.toUpperCase();
     }
 
     public void setPassportNumber(String passportNumber) {
@@ -119,31 +115,23 @@ public class travellerDetail {
     }
 
     public void setLastName(String lastName) {
-        this.lastName = lastName;
+        this.lastName = lastName.toUpperCase();
     }
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
     }
 
-    // public void setDocumentType(String documentType) {
-    //     this.documentType = documentType;
-    // }
-
-    // public void setDeviceType(String deviceType) {
-    //     this.deviceType = deviceType;
-    // }
-
     public void setCountryCallingCode(String countryCallingCode) {
         this.countryCallingCode = countryCallingCode;
     }
 
     public void setBirthPlace(String birthPlace) {
-        this.birthPlace = birthPlace;
+        this.birthPlace = birthPlace.toUpperCase();
     }
 
     public void setIssuanceLocation(String issuanceLocation) {
-        this.issuanceLocation = issuanceLocation;
+        this.issuanceLocation = issuanceLocation.toUpperCase();
     }
 
     public void setIssuanceDate(String issuanceDate) {
@@ -169,14 +157,5 @@ public class travellerDetail {
     public void setNationality(String nationality) {
         this.nationality = nationality;
     }
-
-    // public void setHolder(boolean holder) {
-    //     this.holder = holder;
-    // }
-
-
-
-
-
 
 }
