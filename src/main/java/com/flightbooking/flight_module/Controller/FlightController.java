@@ -39,9 +39,12 @@ public class FlightController {
             String source = fSearch.getSource();
             String destination = fSearch.getDestination();
             String date = fSearch.getDate();
+            int adult = fSearch.getAdult();
+            int child = fSearch.getChild();
+            int infant = fSearch.getInfant();
             List<flightWrapper> flights = new ArrayList<>(); 
             try{
-                apiResponse = api.getFlights(source, destination, date);
+                apiResponse = api.getFlights(source, destination, date, adult, child, infant);
                 flights = api.responseParsing(apiResponse);
 
             }catch(Exception e){

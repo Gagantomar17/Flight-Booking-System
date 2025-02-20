@@ -95,7 +95,7 @@ public class AmadeusAPI {
         return false ;
     }
 
-    public String getFlights(String source, String destination, String date){
+    public String getFlights(String source, String destination, String date, int adult, int child, int infant){
         
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             // Obtain the access token using POST request
@@ -115,7 +115,7 @@ public class AmadeusAPI {
                 System.out.println("Here is access token " + accessToken) ;
 
                 // Use the access token to fetch flight offers
-                HttpGet flightRequest = new HttpGet("https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode="+source+"&destinationLocationCode="+destination+"&departureDate="+date+"&adults=1&nonStop=false&max=250");
+                HttpGet flightRequest = new HttpGet("https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode="+source+"&destinationLocationCode="+destination+"&departureDate="+date+"&adults="+adult+"&children="+child+"&infants="+infant+"&nonStop=true&max=250");
                 flightRequest.addHeader("Authorization", "Bearer " + accessToken);
                 flightRequest.addHeader("Accept", "application/vnd.amadeus+json"); 
 
@@ -225,7 +225,7 @@ public class AmadeusAPI {
         return flights ;
     }
 
-    public String orderReqBody(String repriceResponse , travellerDetail traveller , agentDetails agent){
+    public String orderReqBody(String repriceResponse , travellerDetail traveller , agentDetails agent , documentDetails document){
         JSONObject requestBody = new JSONObject();
 
         JSONObject jsonObject = new JSONObject(repriceResponse);
@@ -260,20 +260,20 @@ public class AmadeusAPI {
 
         travellerObj.put("contact", contact);
 
-        JSONObject document = new JSONObject();
-        document.put("documentType", traveller.getDocumentType());
-        document.put("birthPlace", traveller.getBirthPlace());
-        document.put("issuanceLocation", traveller.getIssuanceLocation());
-        document.put("issuanceDate", traveller.getIssuanceDate());
-        document.put("number", traveller.getPassportNumber());
-        document.put("expiryDate", traveller.getExpiryDate());
-        document.put("issuanceCountry", traveller.getIssuanceCountry());
-        document.put("validityCountry", traveller.getValidityCountry());
-        document.put("nationality", traveller.getNationality());
-        document.put("holder", traveller.getHolder());
+        JSONObject documentObj = new JSONObject();
+        documentObj.put("documentType", document.getDocumentType());
+        documentObj.put("birthPlace", document.getBirthPlace());
+        documentObj.put("issuanceLocation", document.getIssuanceLocation());
+        documentObj.put("issuanceDate", document.getIssuanceDate());
+        documentObj.put("number", document.getPassportNumber());
+        documentObj.put("expiryDate", document.getExpiryDate());
+        documentObj.put("issuanceCountry", document.getIssuanceCountry());
+        documentObj.put("validityCountry", document.getValidityCountry());
+        documentObj.put("nationality", document.getNationality());
+        documentObj.put("holder", document.getHolder());
 
         JSONArray documentArray = new JSONArray();
-        documentArray.put(document);
+        documentArray.put(documentObj);
 
         travellerObj.put("documents", documentArray);
 
