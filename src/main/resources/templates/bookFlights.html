@@ -61,59 +61,68 @@
         <h1>Traveller Details</h1><br>
         <p>reprice successfull</p>
 
-        <form th:action="@{/submitform}" th:object="${travellerDetail}" method="post">
+        <form th:action="@{/submitform}" th:object="${travellerWrapper}" method="post">
 
-            <label for="dateOfBirth">Date of Birth:</label>
-            <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" required/><br/>
+            <div th:each="traveller, iterStat : ${travellerWrapper.travellerList}">
 
-            <label for="gender">Gender:</label>
-            <input type="text" id="gender" th:field="*{gender}" required/><br/>
+                <h3>Traveller <span th:text="${iterStat.index + 1}"></span></h3>
 
-            <label for="firstName">First Name:</label>
-            <input type="text" id="firstName" th:field="*{firstName}" required/><br/>
-
-            <label for="lastName">Last Name:</label>
-            <input type="text" id="lastName" th:field="*{lastName}" required/><br/>
-
-            <label for="emailAddress">Email Address:</label>
-            <input type="email" id="emailAddress" th:field="*{emailAddress}" required/><br/>
-
-            <label for="countryCallingCode">Country Calling Code:</label>
-            <input type="text" id="countryCallingCode" th:field="*{countryCallingCode}" required/><br/>
-
-            <label for="number">Number:</label>
-            <input type="text" id="number" th:field="*{number}" required/><br/>
-
-            <label for="passportNumber">Passport Number</label>
-            <input type="text" id="passportNumber" th:field="*{passportNumber}" required/><br/>
-
-            <label for="birthPlace">Birth Place:</label>
-            <input type="text" id="birthPlace" th:field="*{birthPlace}" required/><br/>
-
-            <label for="issuanceLocation">Issuance Location:</label>
-            <input type="text" id="issuanceLocation" th:field="*{issuanceLocation}" required/><br/>
-
-            <label for="issuanceDate">Issuance Date:</label>
-            <input type="date" id="issuanceDate" th:field="*{issuanceDate}" required/><br/>
-
-            <label for="expiryDate">Expiry Date:</label>
-            <input type="date" id="expiryDate" th:field="*{expiryDate}" required/><br/>
-
-            <label for="issuanceCountry">Issuance Country:</label>
-            <input type="text" id="issuanceCountry" th:field="*{issuanceCountry}" required/><br/>
-
-            <label for="validityCountry">Validity Country:</label>
-            <input type="text" id="validityCountry" th:field="*{validityCountry}" required/><br/>
-
-            <label for="nationality">Nationality:</label>
-            <input type="text" id="nationality" th:field="*{nationality}" required/><br/>
+                <label for="id">Traveller ID</label>
+                <input type="text" id="id" th:field="*{travellerList[__${iterStat.index}__].id}" required />
+                
+                <label for="dateOfBirth">Date of Birth:</label>
+                <input type="date" id="dateOfBirth" th:field="*{travellerList[__${iterStat.index}__].dateOfBirth}" required/><br/>
+    
+                <label for="gender">Gender:</label>
+                <input type="text" id="gender" th:field="*{travellerList[__${iterStat.index}__].gender}" required/><br/>
+    
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" th:field="*{travellerList[__${iterStat.index}__].firstName}" required/><br/>
+    
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" th:field="*{travellerList[__${iterStat.index}__].lastName}" required/><br/>
+    
+                <label for="emailAddress">Email Address:</label>
+                <input type="email" id="emailAddress" th:field="*{travellerList[__${iterStat.index}__].emailAddress}" required/><br/>
+    
+                <label for="countryCallingCode">Country Calling Code:</label>
+                <input type="text" id="countryCallingCode" th:field="*{travellerList[__${iterStat.index}__].countryCallingCode}" required/><br/>
+    
+                <label for="number">Number:</label>
+                <input type="text" id="number" th:field="*{travellerList[__${iterStat.index}__].number}" required/><br/>
+    
+                <label for="passportNumber">Passport Number:</label>
+                <input type="text" id="passportNumber" th:field="*{travellerList[__${iterStat.index}__].passportNumber}" required/><br/>
+    
+                <label for="birthPlace">Birth Place:</label>
+                <input type="text" id="birthPlace" th:field="*{travellerList[__${iterStat.index}__].birthPlace}" required/><br/>
+    
+                <label for="issuanceLocation">Issuance Location:</label>
+                <input type="text" id="issuanceLocation" th:field="*{travellerList[__${iterStat.index}__].issuanceLocation}" required/><br/>
+    
+                <label for="issuanceDate">Issuance Date:</label>
+                <input type="date" id="issuanceDate" th:field="*{travellerList[__${iterStat.index}__].issuanceDate}" required/><br/>
+    
+                <label for="expiryDate">Expiry Date:</label>
+                <input type="date" id="expiryDate" th:field="*{travellerList[__${iterStat.index}__].expiryDate}" required/><br/>
+    
+                <label for="issuanceCountry">Issuance Country:</label>
+                <input type="text" id="issuanceCountry" th:field="*{travellerList[__${iterStat.index}__].issuanceCountry}" required/><br/>
+    
+                <label for="validityCountry">Validity Country:</label>
+                <input type="text" id="validityCountry" th:field="*{travellerList[__${iterStat.index}__].validityCountry}" required/><br/>
+    
+                <label for="nationality">Nationality:</label>
+                <input type="text" id="nationality" th:field="*{travellerList[__${iterStat.index}__].nationality}" required/><br/>
+    
+            </div>
             
             <input type="hidden" id="repriceResponse" th:value="${repriceResponse}" name="repriceResponse" >
-            <button type="submit" onclick="validateForm()">Submit</button>
+            <button type="submit" >Submit</button> 
         </form>
     </div>
 
-    <script>
+    <!-- <script>
         function validateForm() {
             let nationality = document.getElementById("nationality").value.trim();
             let validityCountry = document.getElementById("validityCountry").value.trim();
@@ -247,7 +256,7 @@
     
             return true; 
         }
-    </script>
+    </script> -->
     
 </body>
 </html>

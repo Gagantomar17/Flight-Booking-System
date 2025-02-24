@@ -1,5 +1,6 @@
 package com.flightbooking.flight_module.Controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flightbooking.flight_module.Model.*;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,19 +73,35 @@ public class FlightController {
                 repriceResponse = " Error occured " + e.getMessage();
             }
             model.addAttribute("repriceResponse", repriceResponse);
-            model.addAttribute("travellerDetail", new travellerDetail());
             boolean reprice = api.isPriceUnchanged(repriceResponse, price) ;
 
             if(!reprice){
+                
                 return "repriceFlights" ;
             }else{
+                try {
+                    int travelers = new ObjectMapper().readTree(repriceResponse).path("data").path("flightOffers").get(0).path("travelerPricings").size();
+
+                    travellerWrapper traveller = new travellerWrapper();
+                    List<travellerDetail> travellerList = new ArrayList<>();
+        
+                    for (int i = 0; i < travelers; i++) {
+                        travellerList.add(new travellerDetail());
+                    }
+        
+                    traveller.setTravellerList(travellerList);
+                    model.addAttribute("travellerWrapper", traveller);
+                    System.out.println("Traveller List Size: " + travellerList.size());
+                } catch (Exception e) {
+                    // TODO: handle exception
+                }
                 return "bookFlights" ;
             } 
     }
 
     @PostMapping("/submitform")
     public String createOrder(Model model ,
-    @ModelAttribute travellerDetail traveller ,
+    @ModelAttribute travellerWrapper traveller ,
     @ModelAttribute agentDetails agent ,
     @RequestParam("repriceResponse") String repriceResponse){
         String reqBody = "null" ;

@@ -225,61 +225,67 @@ public class AmadeusAPI {
         return flights ;
     }
 
-    public String orderReqBody(String repriceResponse , travellerDetail traveller , agentDetails agent ){
+    public String orderReqBody(String repriceResponse , travellerWrapper travellerWrapper , agentDetails agent ){
         JSONObject requestBody = new JSONObject();
 
         JSONObject jsonObject = new JSONObject(repriceResponse);
         JSONArray flightOfferArray = jsonObject.getJSONObject("data").getJSONArray("flightOffers") ;
 
+        List<travellerDetail> travellerList = travellerWrapper.getTravellerList();
+
+
         JSONObject data = new JSONObject();
         data.put("type", "flight-order");
         data.put("flightOffers", flightOfferArray);
 
-        JSONObject travellerObj = new JSONObject();
-        travellerObj.put("id", traveller.getId());
-        travellerObj.put("dateOfBirth", traveller.getDateOfBirth());
+        JSONArray travellersArray = new JSONArray(); 
+        for(travellerDetail traveller : travellerList ){
+            JSONObject travellerObj = new JSONObject();
+            travellerObj.put("id", traveller.getId());
+            travellerObj.put("dateOfBirth", traveller.getDateOfBirth());
 
-        JSONObject name = new JSONObject();
-        name.put("firstName", traveller.getFirstName());
-        name.put("lastName", traveller.getLastName());
-        travellerObj.put("name", name);
+            JSONObject name = new JSONObject();
+            name.put("firstName", traveller.getFirstName());
+            name.put("lastName", traveller.getLastName());
+            travellerObj.put("name", name);
 
-        travellerObj.put("gender", traveller.getGender());
+            travellerObj.put("gender", traveller.getGender());
 
-        JSONObject phone = new JSONObject();
-        phone.put("deviceType", traveller.getDeviceType());
-        phone.put("countryCallingCode", traveller.getCountryCallingCode());
-        phone.put("number", traveller.getNumber());
+            JSONObject phone = new JSONObject();
+            phone.put("deviceType", traveller.getDeviceType());
+            phone.put("countryCallingCode", traveller.getCountryCallingCode());
+            phone.put("number", traveller.getNumber());
 
-        JSONArray phoneArray = new JSONArray();
-        phoneArray.put(phone);
+            JSONArray phoneArray = new JSONArray();
+            phoneArray.put(phone);
 
-        JSONObject contact = new JSONObject();
-        contact.put("emailAddress", traveller.getEmailAddress());
-        contact.put("phones", phoneArray);
+            JSONObject contact = new JSONObject();
+            contact.put("emailAddress", traveller.getEmailAddress());
+            contact.put("phones", phoneArray);
 
-        travellerObj.put("contact", contact);
+            travellerObj.put("contact", contact);
 
-        JSONObject documentObj = new JSONObject();
-        documentObj.put("documentType", traveller.getDocumentType());
-        documentObj.put("birthPlace", traveller.getBirthPlace());
-        documentObj.put("issuanceLocation", traveller.getIssuanceLocation());
-        documentObj.put("issuanceDate", traveller.getIssuanceDate());
-        documentObj.put("number", traveller.getPassportNumber());
-        documentObj.put("expiryDate", traveller.getExpiryDate());
-        documentObj.put("issuanceCountry", traveller.getIssuanceCountry());
-        documentObj.put("validityCountry", traveller.getValidityCountry());
-        documentObj.put("nationality", traveller.getNationality());
-        documentObj.put("holder", traveller.getHolder());
+            JSONObject documentObj = new JSONObject();
+            documentObj.put("documentType", traveller.getDocumentType());
+            documentObj.put("birthPlace", traveller.getBirthPlace());
+            documentObj.put("issuanceLocation", traveller.getIssuanceLocation());
+            documentObj.put("issuanceDate", traveller.getIssuanceDate());
+            documentObj.put("number", traveller.getPassportNumber());
+            documentObj.put("expiryDate", traveller.getExpiryDate());
+            documentObj.put("issuanceCountry", traveller.getIssuanceCountry());
+            documentObj.put("validityCountry", traveller.getValidityCountry());
+            documentObj.put("nationality", traveller.getNationality());
+            documentObj.put("holder", traveller.getHolder());
+        
+            JSONArray documentArray = new JSONArray();
+            documentArray.put(documentObj);
+        
+            travellerObj.put("documents", documentArray);
+            travellersArray.put(travellerObj);
+            
+        }
 
-        JSONArray documentArray = new JSONArray();
-        documentArray.put(documentObj);
-
-        travellerObj.put("documents", documentArray);
-
-        JSONArray travellerArray = new JSONArray();
-        travellerArray.put(travellerObj);
-        data.put("travelers", travellerArray);
+        data.put("travelers", travellersArray);
 
         JSONObject remarks = new JSONObject();
         JSONObject general = new JSONObject();
@@ -301,7 +307,7 @@ public class AmadeusAPI {
         JSONObject addresseeName = new JSONObject();
         addresseeName.put("firstName", agent.getFirstName());
         addresseeName.put("lastName", agent.getLastName());
-        contacts.put("addresseeName", name);
+        contacts.put("addresseeName", addresseeName);
         contacts.put("companyName", agent.getCompanyName());
         contacts.put("purpose", agent.getPurpose());
         JSONObject agentPhone = new JSONObject();

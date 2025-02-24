@@ -1,17 +1,17 @@
 package com.flightbooking.flight_module.Model;
 
+import java.util.List;
+
 public class travellerWrapper {
-    private travellerDetail traveller ;
 
-    public travellerWrapper(travellerDetail traveller){
-        this.traveller = traveller ;
+    private List<travellerDetail> travellerList ;
+
+    public List<travellerDetail> getTravellerList() {
+        return travellerList;
     }
 
-    public void setTraveller(travellerDetail traveller) {
-        this.traveller = traveller;
+    public void setTravellerList(List<travellerDetail> travellerList) {
+        this.travellerList = travellerList;
     }
-
-    public travellerDetail getTraveller() {
-        return traveller;
-    }
+    
 }
