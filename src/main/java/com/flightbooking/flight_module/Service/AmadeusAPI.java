@@ -225,7 +225,7 @@ public class AmadeusAPI {
         return flights ;
     }
 
-    public String orderReqBody(String repriceResponse , travellerDetail traveller , agentDetails agent , documentDetails document){
+    public String orderReqBody(String repriceResponse , travellerDetail traveller , agentDetails agent ){
         JSONObject requestBody = new JSONObject();
 
         JSONObject jsonObject = new JSONObject(repriceResponse);
@@ -261,16 +261,16 @@ public class AmadeusAPI {
         travellerObj.put("contact", contact);
 
         JSONObject documentObj = new JSONObject();
-        documentObj.put("documentType", document.getDocumentType());
-        documentObj.put("birthPlace", document.getBirthPlace());
-        documentObj.put("issuanceLocation", document.getIssuanceLocation());
-        documentObj.put("issuanceDate", document.getIssuanceDate());
-        documentObj.put("number", document.getPassportNumber());
-        documentObj.put("expiryDate", document.getExpiryDate());
-        documentObj.put("issuanceCountry", document.getIssuanceCountry());
-        documentObj.put("validityCountry", document.getValidityCountry());
-        documentObj.put("nationality", document.getNationality());
-        documentObj.put("holder", document.getHolder());
+        documentObj.put("documentType", traveller.getDocumentType());
+        documentObj.put("birthPlace", traveller.getBirthPlace());
+        documentObj.put("issuanceLocation", traveller.getIssuanceLocation());
+        documentObj.put("issuanceDate", traveller.getIssuanceDate());
+        documentObj.put("number", traveller.getPassportNumber());
+        documentObj.put("expiryDate", traveller.getExpiryDate());
+        documentObj.put("issuanceCountry", traveller.getIssuanceCountry());
+        documentObj.put("validityCountry", traveller.getValidityCountry());
+        documentObj.put("nationality", traveller.getNationality());
+        documentObj.put("holder", traveller.getHolder());
 
         JSONArray documentArray = new JSONArray();
         documentArray.put(documentObj);
