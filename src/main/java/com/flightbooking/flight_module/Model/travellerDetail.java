@@ -1,15 +1,16 @@
+
 package com.flightbooking.flight_module.Model;
 
 public class travellerDetail {
-    private String id = "1" ;
+    private String id ;
     private String dateOfBirth ;
     private String gender ;
     private String firstName ;
-    private String lastName ; 
+    private String lastName ;
     private String emailAddress ;
     private String deviceType = "MOBILE" ;
     private String countryCallingCode ;
-    private String number ; 
+    private String number ;
     private String passportNumber ;
     private String documentType = "PASSPORT" ;
     private String birthPlace ;
@@ -120,6 +121,10 @@ public class travellerDetail {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setCountryCallingCode(String countryCallingCode) {

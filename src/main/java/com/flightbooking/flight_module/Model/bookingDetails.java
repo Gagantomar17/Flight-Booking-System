@@ -1,5 +1,8 @@
 package com.flightbooking.flight_module.Model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class bookingDetails {
 
     private String orderId;
@@ -17,20 +20,22 @@ public class bookingDetails {
     private String totalPrice;
     private String billingCurrency;
 
-    private String travelerId;
-    private String firstName;
-    private String lastName;
-    private String gender ;
-    private String dateOfBirth;
+//    private String travelerId;
+//    private String firstName;
+//    private String lastName;
+//    private String gender ;
+//    private String dateOfBirth;
     
     private String remarks;
 
-    public void setDateOfBirth(String dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
+    private Map<String, String> travelerDetailsMap = new HashMap<>();
+
+    public Map<String, String> getTravelerDetailsMap() {
+        return travelerDetailsMap;
     }
 
-    public void setGender(String gender) {
-        this.gender = gender;
+    public void setTravelerDetailsMap(Map<String, String> travelerDetailsMap) {
+        this.travelerDetailsMap = travelerDetailsMap;
     }
 
     public void setCarrierCode(String carrierCode) {
@@ -77,16 +82,8 @@ public class bookingDetails {
         this.arrival = arrival;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
     public void setFlightNumber(String flightNumber) {
         this.flightNumber = flightNumber;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
     public void setRemarks(String remarks) {
@@ -95,18 +92,6 @@ public class bookingDetails {
 
     public void setTotalPrice(String totalPrice) {
         this.totalPrice = totalPrice;
-    }
-
-    public void setTravelerId(String travelerId) {
-        this.travelerId = travelerId;
-    }
-
-    public String getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public String getGender() {
-        return gender;
     }
 
     public String getCreationDate() {
@@ -157,23 +142,13 @@ public class bookingDetails {
         return billingCurrency;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
     public String getTotalPrice() {
         return totalPrice;
     }
 
-    public String getLastName() {
-        return lastName;
-    }
 
     public String getRemarks() {
         return remarks;
     }
 
-    public String getTravelerId() {
-        return travelerId;
-    }
 }

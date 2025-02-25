@@ -17,7 +17,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AmadeusAPI {
@@ -95,7 +97,7 @@ public class AmadeusAPI {
         return false ;
     }
 
-    public String getFlights(String source, String destination, String date){
+    public String getFlights(String source, String destination, String date, int adult, int child, int infant){
         
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             // Obtain the access token using POST request
@@ -115,7 +117,7 @@ public class AmadeusAPI {
                 System.out.println("Here is access token " + accessToken) ;
 
                 // Use the access token to fetch flight offers
-                HttpGet flightRequest = new HttpGet("https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode="+source+"&destinationLocationCode="+destination+"&departureDate="+date+"&adults=1&nonStop=false&max=250");
+                HttpGet flightRequest = new HttpGet("https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode="+source+"&destinationLocationCode="+destination+"&departureDate="+date+"&adults="+adult+"&children="+child+"&infants="+infant+"&nonStop=true&max=250");
                 flightRequest.addHeader("Authorization", "Bearer " + accessToken);
                 flightRequest.addHeader("Accept", "application/vnd.amadeus+json"); 
 
@@ -225,61 +227,67 @@ public class AmadeusAPI {
         return flights ;
     }
 
-    public String orderReqBody(String repriceResponse , travellerDetail traveller , agentDetails agent){
+    public String orderReqBody(String repriceResponse , travellerWrapper travellerWrapper , agentDetails agent ){
         JSONObject requestBody = new JSONObject();
 
         JSONObject jsonObject = new JSONObject(repriceResponse);
         JSONArray flightOfferArray = jsonObject.getJSONObject("data").getJSONArray("flightOffers") ;
 
+        List<travellerDetail> travellerList = travellerWrapper.getTravellerList();
+
+
         JSONObject data = new JSONObject();
         data.put("type", "flight-order");
         data.put("flightOffers", flightOfferArray);
 
-        JSONObject travellerObj = new JSONObject();
-        travellerObj.put("id", traveller.getId());
-        travellerObj.put("dateOfBirth", traveller.getDateOfBirth());
+        JSONArray travellersArray = new JSONArray(); 
+        for(travellerDetail traveller : travellerList ){
+            JSONObject travellerObj = new JSONObject();
+            travellerObj.put("id", traveller.getId());
+            travellerObj.put("dateOfBirth", traveller.getDateOfBirth());
 
-        JSONObject name = new JSONObject();
-        name.put("firstName", traveller.getFirstName());
-        name.put("lastName", traveller.getLastName());
-        travellerObj.put("name", name);
+            JSONObject name = new JSONObject();
+            name.put("firstName", traveller.getFirstName());
+            name.put("lastName", traveller.getLastName());
+            travellerObj.put("name", name);
 
-        travellerObj.put("gender", traveller.getGender());
+            travellerObj.put("gender", traveller.getGender());
 
-        JSONObject phone = new JSONObject();
-        phone.put("deviceType", traveller.getDeviceType());
-        phone.put("countryCallingCode", traveller.getCountryCallingCode());
-        phone.put("number", traveller.getNumber());
+            JSONObject phone = new JSONObject();
+            phone.put("deviceType", traveller.getDeviceType());
+            phone.put("countryCallingCode", traveller.getCountryCallingCode());
+            phone.put("number", traveller.getNumber());
 
-        JSONArray phoneArray = new JSONArray();
-        phoneArray.put(phone);
+            JSONArray phoneArray = new JSONArray();
+            phoneArray.put(phone);
 
-        JSONObject contact = new JSONObject();
-        contact.put("emailAddress", traveller.getEmailAddress());
-        contact.put("phones", phoneArray);
+            JSONObject contact = new JSONObject();
+            contact.put("emailAddress", traveller.getEmailAddress());
+            contact.put("phones", phoneArray);
 
-        travellerObj.put("contact", contact);
+            travellerObj.put("contact", contact);
 
-        JSONObject document = new JSONObject();
-        document.put("documentType", traveller.getDocumentType());
-        document.put("birthPlace", traveller.getBirthPlace());
-        document.put("issuanceLocation", traveller.getIssuanceLocation());
-        document.put("issuanceDate", traveller.getIssuanceDate());
-        document.put("number", traveller.getPassportNumber());
-        document.put("expiryDate", traveller.getExpiryDate());
-        document.put("issuanceCountry", traveller.getIssuanceCountry());
-        document.put("validityCountry", traveller.getValidityCountry());
-        document.put("nationality", traveller.getNationality());
-        document.put("holder", traveller.getHolder());
+            JSONObject documentObj = new JSONObject();
+            documentObj.put("documentType", traveller.getDocumentType());
+            documentObj.put("birthPlace", traveller.getBirthPlace());
+            documentObj.put("issuanceLocation", traveller.getIssuanceLocation());
+            documentObj.put("issuanceDate", traveller.getIssuanceDate());
+            documentObj.put("number", traveller.getPassportNumber());
+            documentObj.put("expiryDate", traveller.getExpiryDate());
+            documentObj.put("issuanceCountry", traveller.getIssuanceCountry());
+            documentObj.put("validityCountry", traveller.getValidityCountry());
+            documentObj.put("nationality", traveller.getNationality());
+            documentObj.put("holder", traveller.getHolder());
+        
+            JSONArray documentArray = new JSONArray();
+            documentArray.put(documentObj);
+        
+            travellerObj.put("documents", documentArray);
+            travellersArray.put(travellerObj);
+            
+        }
 
-        JSONArray documentArray = new JSONArray();
-        documentArray.put(document);
-
-        travellerObj.put("documents", documentArray);
-
-        JSONArray travellerArray = new JSONArray();
-        travellerArray.put(travellerObj);
-        data.put("travelers", travellerArray);
+        data.put("travelers", travellersArray);
 
         JSONObject remarks = new JSONObject();
         JSONObject general = new JSONObject();
@@ -301,7 +309,7 @@ public class AmadeusAPI {
         JSONObject addresseeName = new JSONObject();
         addresseeName.put("firstName", agent.getFirstName());
         addresseeName.put("lastName", agent.getLastName());
-        contacts.put("addresseeName", name);
+        contacts.put("addresseeName", addresseeName);
         contacts.put("companyName", agent.getCompanyName());
         contacts.put("purpose", agent.getPurpose());
         JSONObject agentPhone = new JSONObject();
@@ -415,16 +423,24 @@ public class AmadeusAPI {
                 }
             }
 
+            Map<String , String> travelerDetailsMap = new HashMap<>();
             JsonNode travelersArray = dataNode.get("travelers");
             if(travelersArray != null && travelersArray.isArray()){
                 for(JsonNode traveler : travelersArray){
-                    bookingData.setTravelerId(traveler.get("id").asText());
-                    bookingData.setGender(traveler.get("gender").asText());
-                    bookingData.setDateOfBirth(traveler.get("dateOfBirth").asText());
-                    bookingData.setFirstName(traveler.get("name").get("firstName").asText());
-                    bookingData.setLastName(traveler.get("name").get("lastName").asText());
+                    String travelerId = traveler.get("id").asText();
+                    String firstName = traveler.get("name").get("firstName").asText();
+                    String lastName = traveler.get("name").get("lastName").asText();
+                    String gender = traveler.get("gender").asText();
+                    String dateOfBirth = traveler.get("dateOfBirth").asText();
+
+                    String travelerDetails = "Name: " + firstName + " " + lastName +
+                            ", Gender: " + gender +
+                            ", DOB: " + dateOfBirth;
+
+                    travelerDetailsMap.put(travelerId, travelerDetails);
 
                 }
+                bookingData.setTravelerDetailsMap(travelerDetailsMap);
             }
 
             JsonNode remarksArray = dataNode.get("remarks").get("general");

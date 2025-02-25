@@ -5,6 +5,33 @@ public class flightSearch {
     private String source ;
     private String destination ;
     private String date ;
+    private int adult ;
+    private int child ;
+    private int infant ;
+
+    public int getAdult() {
+        return adult;
+    }
+
+    public void setAdult(int adult) {
+        this.adult = adult;
+    }
+
+    public int getChild() {
+        return child;
+    }
+
+    public void setChild(int child) {
+        this.child = child;
+    }
+
+    public int getInfant() {
+        return infant;
+    }
+
+    public void setInfant(int infant) {
+        this.infant = infant;
+    }
 
     public String getSource() {
         return source;

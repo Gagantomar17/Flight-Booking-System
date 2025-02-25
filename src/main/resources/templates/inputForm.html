@@ -21,6 +21,14 @@
             text-align: center;
             width: 450px;
         }
+
+        .passengers{
+            display: flex;
+            gap: 15px;
+        }
+        .passengers input{
+            width: 32% ;
+        }
         button {
             width: 100%;
             padding: 10px;
@@ -58,18 +66,28 @@
             
             <!-- Source Input Field -->
             <label for="source">Source:</label>
-            <input type="text" id="source" name="source" th:field="*{source}" placeholder="Enter source (e.g., DEL)" required />
+            <input type="text" id="source" name="source" th:field="*{source}" placeholder="Enter source" required />
             <br><br>
 
             <!-- Destination Input Field -->
             <label for="destination">Destination:</label>
-            <input type="text" id="destination" name="destination" th:field="*{destination}" placeholder="Enter destination (e.g., NYC)" required />
+            <input type="text" id="destination" name="destination" th:field="*{destination}" placeholder="Enter destination" required />
             <br><br>
 
             <!-- Date Input Field -->
             <label for="date">Date:</label>
             <input type="date" id="date" name="date" th:field="*{date}" required />
             <br><br>
+
+            <div class="passengers">
+                <label for="adult">Adult</label>
+                <input type="number" id="adult" name="adult" th:field="*{adult}" placeholder="Adult" min="1" required />
+                <label for="child">Child</label>
+                <input type="number" id="child" name="child" th:field="*{child}" placeholder="Child"  />
+                <label for="infant">Infant</label>
+                <input type="number" id="infant" name="infant" th:field="*{infant}" placeholder="Infant"  />
+            </div>
+            
 
             <!-- Submit Button -->
             <button type="submit" onclick="validateForm()">Search Flights</button>
@@ -82,6 +100,9 @@
         let source = document.getElementById("source").value.trim();
         let destination = document.getElementById("destination").value.trim();
         let date = document.getElementById("date").value;
+        let adult = parseInt(document.getElementById("adult").value.trim());
+        let child = parseInt(document.getElementById("child").value.trim()) || 0;
+        let infant = parseInt(document.getElementById("infant").value.trim()) || 0;
 
         // Regular expression to check 3-letter uppercase airport codes
         let airportCode = /^[A-Z]{3}$/;
@@ -101,13 +122,25 @@
 
         // Check if date is in the future
         let today = new Date();
-        today.setHours(0, 0, 0, 0); // Remove time part to compare only dates
+        today.setHours(0, 0, 0, 0);
         let selectedDate = new Date(date);
 
         if (selectedDate <= today) {
             alert("Please select a future date for travel.");
             event.preventDefault();
             return false;
+        }
+
+        if(adult + child >9){
+            alert("No of passengers should be less than 9");
+            event.preventDefault();
+            return false ;
+        }
+
+        if(infant > adult){
+            alert("No of infant should be less than or equal to Adults");
+            event.preventDefault();
+            return false ;
         }
 
         return true ;
