@@ -17,7 +17,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AmadeusAPI {
@@ -421,16 +423,24 @@ public class AmadeusAPI {
                 }
             }
 
+            Map<String , String> travelerDetailsMap = new HashMap<>();
             JsonNode travelersArray = dataNode.get("travelers");
             if(travelersArray != null && travelersArray.isArray()){
                 for(JsonNode traveler : travelersArray){
-                    bookingData.setTravelerId(traveler.get("id").asText());
-                    bookingData.setGender(traveler.get("gender").asText());
-                    bookingData.setDateOfBirth(traveler.get("dateOfBirth").asText());
-                    bookingData.setFirstName(traveler.get("name").get("firstName").asText());
-                    bookingData.setLastName(traveler.get("name").get("lastName").asText());
+                    String travelerId = traveler.get("id").asText();
+                    String firstName = traveler.get("name").get("firstName").asText();
+                    String lastName = traveler.get("name").get("lastName").asText();
+                    String gender = traveler.get("gender").asText();
+                    String dateOfBirth = traveler.get("dateOfBirth").asText();
+
+                    String travelerDetails = "Name: " + firstName + " " + lastName +
+                            ", Gender: " + gender +
+                            ", DOB: " + dateOfBirth;
+
+                    travelerDetailsMap.put(travelerId, travelerDetails);
 
                 }
+                bookingData.setTravelerDetailsMap(travelerDetailsMap);
             }
 
             JsonNode remarksArray = dataNode.get("remarks").get("general");

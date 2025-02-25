@@ -66,11 +66,10 @@
 
         <section>
             <h2>Traveler Information</h2>
-            <p><strong>Traveler ID:</strong> <span th:text="${bookingData.travelerId}"></span></p>
-            <p><strong>First Name:</strong> <span th:text="${bookingData.firstName}"></span></p>
-            <p><strong>Last Name:</strong> <span th:text="${bookingData.lastName}"></span></p>
-            <p><strong>Gender:</strong> <span th:text="${bookingData.gender}"></span></p>
-            <p><strong>Date of Birth:</strong> <span th:text="${bookingData.dateOfBirth}"></span></p>
+            <div th:each="travelerEntry : ${bookingData.travelerDetailsMap}">
+                <p><strong>Traveler ID:</strong> <span th:text="${travelerEntry.key}"></span></p>
+                <p><strong>Details:</strong> <span th:text="${travelerEntry.value}"></span></p>
+            </div>
         </section>
 
         <section>
